@@ -13,16 +13,30 @@ struct ContentView: View {
     
     @Environment(\.managedObjectContext) var managedObjectContext
     
+    @FetchRequest(entity: Todo.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Todo.name, ascending: true)]) var todos: FetchedResults<Todo>
+    
     @State private var addTodoView: Bool = false
     
     // MARK: - BODY
     var body: some View {
         NavigationView {
-            List(0..<5) {item in
-                Text("sss")
+            List {
+                ForEach(self.todos, id: \.self) {todo in
+                    HStack {
+                        Text(todo.name ?? "Unkown")
+                        
+                        Spacer()
+                        
+                        Text(todo.priority ?? "Unkown")
+                    }
+                }
+                
+                .onDelete(perform: deleteTodo)
             }
             .navigationBarTitle("Tarefas", displayMode: .inline)
-            .navigationBarItems(trailing:
+            .navigationBarItems(
+                leading: EditButton(),
+                trailing:
                 Button(action: {
                     self.addTodoView.toggle()
                 }){
@@ -34,12 +48,27 @@ struct ContentView: View {
             )
         }
     }
+    
+    // MARK: - FUNCTIONS
+    
+    private func deleteTodo(at offsets: IndexSet) { // deleting todo by index
+        for index in offsets {
+            let todo = todos[index]
+            managedObjectContext.delete(todo)
+        }
+        
+        do {
+            try managedObjectContext.save()
+        } catch {
+            print(error)
+        }
+    }
 }
 
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-            .previewDevice("iPhone 11 Pro")
+       ContentView()
+        .previewDevice("iPhone 11 Pro")
     }
 }

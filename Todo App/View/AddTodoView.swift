@@ -39,8 +39,8 @@ struct AddTodoView: View {
                     Button(action: {
                         if self.name != "" {
                             let todo = Todo(context: self.managedObjectContext)
-                            todo.name = self.priority
-                            todo.priority = self.name
+                            todo.name = self.name
+                            todo.priority = self.priority
                             
                             do {
                                 try self.managedObjectContext.save()
