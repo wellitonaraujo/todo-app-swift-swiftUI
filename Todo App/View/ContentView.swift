@@ -9,8 +9,13 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    // MARK: - PROPERTIES
+    
+    @Environment(\.managedObjectContext) var managedObjectContext
     
     @State private var addTodoView: Bool = false
+    
+    // MARK: - BODY
     var body: some View {
         NavigationView {
             List(0..<5) {item in
@@ -24,7 +29,7 @@ struct ContentView: View {
                     Image(systemName: "plus")
                 }
                 .sheet(isPresented: $addTodoView) {
-                    AddTodoView()
+                    AddTodoView().environment(\.managedObjectContext, self.managedObjectContext)
                 }
             )
         }
